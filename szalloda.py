@@ -12,13 +12,13 @@ class Szoba:
 
 class EgyagyasSzoba(Szoba):
     def __init__(self, szobaszam):
-        super.__init__(3, szobaszam)
+        super().__init__(3, szobaszam)
         self.ferohely = 1
 
 
 class KetagyasSzoba(Szoba):
     def __init__(self, szobaszam):
-        super.__init__(5, szobaszam)
+        super().__init__(5, szobaszam)
         self.ferohely = 2
 
 
@@ -46,12 +46,14 @@ class Szalloda:
             print("Csak jövőbeni dátumra fogadunk foglalásokat")
         if len(list(filter(lambda f: f.datum == datum and f.szobaszam == szobaszam, self.foglalasok))) == 0:
             self.foglalasok.append(Foglalas(datum, szobaszam))
+            print()
+            print("A foglalás sikeres!")
         else:
             print("A szoba nem elérhető a kért dátumon")
 
     def listazas(self):
         for index, foglalas in enumerate(self.foglalasok):
-            print(f"{index} {foglalas.datum} - {foglalas.szobaszam} ")
+            print(f"{index} dátum: {foglalas.datum} - szobaszám: {foglalas.szobaszam} ")
 
     def lemondas(self, foglalas: Foglalas):
         try:
@@ -59,13 +61,25 @@ class Szalloda:
         except ValueError:
             print("Nincsen ilyen foglalás")
 
+    def uj_szoba(self, szoba: Szoba):
+        self.szobak.append(szoba)
+
 def str_to_date(string: str):
     return date.fromisoformat(string)
 
 sz = Szalloda("Szálloda")
+sz.uj_szoba(EgyagyasSzoba(1))
+sz.uj_szoba(EgyagyasSzoba(2))
+sz.uj_szoba(KetagyasSzoba(3))
+sz.foglalas(date.fromisoformat("2023-12-11"), 1)
+sz.foglalas(date.fromisoformat("2023-12-31"), 3)
+sz.foglalas(date.fromisoformat("2024-01-11"), 2)
+sz.foglalas(date.fromisoformat("2023-12-11"), 2)
+sz.foglalas(date.fromisoformat("2023-12-11"), 3)
 
 print(sz.nev)
 while True:
+    print()
     print("Válaszd ki a kívánt műveletet:")
     print("1 Foglalás")
     print("2 Lemondás")
@@ -89,6 +103,8 @@ while True:
             except:
                 print("Rossz dátum!")
                 continue
+        for szoba in sz.szobak:
+            print(f"{szoba.szobaszam} - {szoba.ar} Ft")
         szobaszam = int(input("Szobaszám: "))
         sz.foglalas(datum, szobaszam)
     elif option == 2:
